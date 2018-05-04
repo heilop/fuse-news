@@ -5,32 +5,43 @@
 
 		var data = Observable();
 
-		function Article(item) {
+		function Article(item, include) {
 			//console.log(item.created * 1000);
-			this.title = item.title;
-			this.description = item.body.summary;
+			this.title = item.attributes.title;
+			this.description = item.attributes.body.summary;
 			this.author = 'Heissen López';
 			//this.published = new Date().toDateString();
-			this.published = new Date(item.created * 1000).toDateString();
+			this.published = new Date(item.attributes.created * 1000).toDateString();
 			this.image = "http://keithmackay.com/images/picture.jpg";
-			//if (item.content.media.images.length > 0) this.image = item.content.media.images[0].original_url;
+			// Get Images
+			var relationships = item.relationships;
+			if (relationships.field_image.data) {
+				var image_id = relationships.field_image.data.id;
+				this.image = GetUrlImage(image_id, include);
+			}
+			// Get Tags
+			this.tags = "";
+			if (relationships.field_tags.data) {
+				var tags = relationships.field_tags.data;
+				this.tags = GetTags(tags, include);
+			}
 		};
 
-		fetch("http://dev-dpicchu-jsonapi.pantheonsite.io/jsonapi/node/article")
+		fetch("http://dev-dpicchu-jsonapi.pantheonsite.io/jsonapi/node/article?sort=-created&include=field_image,field_tags")
 		.then(function(response) { return response.json(); })
 		.then(function(responseObject) {
 			var items = [];
 			for (var i in responseObject.data) {
-				var item = new Article(responseObject.data[i].attributes)
+				var item = new Article(responseObject.data[i], responseObject.included)
 				items.push(item);
-				//console.dir(responseObject.data[i].attributes);
+				//console.dir(responseObject.data[i].relationships.field_image);
 			}
 			data.replaceAll(items);
 			//console.dir(items);
 		});
 
 		module.exports = {
-			dataSource: data
+			dataSource: data,
 		};
 	</JavaScript>
 
@@ -47,6 +58,9 @@
 			</DockPanel>
 			<DockPanel>
 				<Text Value="{published}" FontSize="10" Color="#999" Dock="Left" />
+				<WhileString Value="{tags}" Test="IsNotEmpty">
+					<Text Value="Tags: {tags}" FontSize="10" Color="#ffb90f" Dock="Left" Margin="15,0,0,0"  />
+				</WhileString>
 				<WhileString Value="{author}" Test="IsNotEmpty">
 			 		<Text Value="by {author}" FontSize="10" Color="#999" Dock="Right" />
 			 	</WhileString>
