@@ -5,6 +5,11 @@
 
 		var data = Observable();
 
+		/**
+		 * Helper function to get Image Url of the article.
+		 * @param       string itemID
+		 * @param       object include
+		 */
 		function GetUrlImage(itemID, include) {
 			for (var i in include) {
 				if (itemID == include[i].id) {
@@ -15,6 +20,11 @@
 			}
 		}
 
+		/**
+		 * Helper function to get Tags fron node.
+		 * @param       array tags
+		 * @param       array include
+		 */
 		function GetTags(tags, include) {
 			var tagNames = '';
 			for (var i in tags) {
@@ -35,6 +45,11 @@
 			return tagNames;
 		}
 
+		/**
+		 * Get attributes for an article.
+		 * @param       object item
+		 * @param       object include
+		 */
 		function Article(item, include) {
 			//console.log(item.created * 1000);
 			this.title = item.attributes.title;
