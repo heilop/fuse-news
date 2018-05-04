@@ -5,6 +5,16 @@
 
 		var data = Observable();
 
+		function GetUrlImage(itemID, include) {
+			for (var i in include) {
+				if (itemID == include[i].id) {
+					var baseUrl = 'http://dev-dpicchu-jsonapi.pantheonsite.io/';
+					var imgURL = include[i].attributes.url
+					return baseUrl + imgURL;
+				}
+			}
+		}
+
 		function Article(item, include) {
 			//console.log(item.created * 1000);
 			this.title = item.attributes.title;
